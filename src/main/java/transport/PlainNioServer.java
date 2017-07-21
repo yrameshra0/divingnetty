@@ -14,10 +14,10 @@ import java.util.Set;
 public class PlainNioServer {
     public static void main(String[] args) throws IOException {
         PlainNioServer plainNioServer = new PlainNioServer();
-        plainNioServer.server(1901);
+        plainNioServer.server(1901, ByteBuffer.wrap("Hi \r\n".getBytes()));
     }
 
-    public void server(int port) throws IOException {
+    public void server(int port, ByteBuffer message) throws IOException {
         ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
         serverSocketChannel.configureBlocking(false);
         ServerSocket serverSocket = serverSocketChannel.socket();
@@ -26,12 +26,11 @@ public class PlainNioServer {
 
         Selector selector = Selector.open();
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-        waitForClientConnection(selector);
+        waitForClientConnection(selector, message);
 
     }
 
-    private void waitForClientConnection(Selector selector) throws IOException {
-        final ByteBuffer message = ByteBuffer.wrap("Hi \r\n".getBytes());
+    private void waitForClientConnection(Selector selector, ByteBuffer message) throws IOException {
         while (true) {
             selector.select();
             Set<SelectionKey> readyKeys = selector.selectedKeys();

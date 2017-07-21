@@ -18,19 +18,18 @@ import static io.netty.util.CharsetUtil.UTF_8;
 public class NettyOioAndNioServer {
     public static void main(String[] args) throws InterruptedException {
         NettyOioAndNioServer nettyOioAndNioServer = new NettyOioAndNioServer();
-        nettyOioAndNioServer.serverWithNio(1901);
+        nettyOioAndNioServer.serverWithNio(1901, unreleasableBuffer(copiedBuffer("Hi \r\n", UTF_8)));
     }
 
-    public void serverWithOio(int port) throws InterruptedException {
-        server(port, new OioEventLoopGroup(), OioServerSocketChannel.class);
+    public void serverWithOio(int port, ByteBuf message) throws InterruptedException {
+        server(port, new OioEventLoopGroup(), OioServerSocketChannel.class, message);
     }
 
-    public void serverWithNio(int port) throws InterruptedException {
-        server(port, new NioEventLoopGroup(), NioServerSocketChannel.class);
+    public void serverWithNio(int port, ByteBuf message) throws InterruptedException {
+        server(port, new NioEventLoopGroup(), NioServerSocketChannel.class, message);
     }
 
-    public void server(int port, EventLoopGroup eventLoopGroup, Class<? extends ServerChannel> serverChannelClazz) throws InterruptedException {
-        final ByteBuf messageBuffer = unreleasableBuffer(copiedBuffer("Hi \r\n", UTF_8));
+    public void server(int port, EventLoopGroup eventLoopGroup, Class<? extends ServerChannel> serverChannelClazz, ByteBuf messageBuffer) throws InterruptedException {
 
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
